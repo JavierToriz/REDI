@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput } from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 //import { createStackNavigator } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-
-import { Ionicons,  Feather } from '@expo/vector-icons';
+import { Entypo, Ionicons,  Feather } from '@expo/vector-icons';
 
 //Auth Screens
 import LogIn from './screens/auth/LogInScreen';
@@ -17,7 +16,9 @@ import GustosScreen from './screens/auth/GustosScreen';
 import HomeScreen from './screens/CameraScreen';
 import CreadorEscenas from './screens/CreadorEscenas';
 import CameraScreen from './screens/HomeScreen';
-import { Camera } from 'expo-camera';
+import NotificacionesScreen from './screens/NotificacionesScreen';
+import VisualizarEscena from './screens/VisualizarEscena';
+import ComentariosScreen from './screens/ComentariosScreen';
 
 // Header's component
 import ButtonHeader from './src/components/ButtonHeader';
@@ -36,15 +37,20 @@ function MyTabs() {
         <Tab.Navigator 
                 initialRouteName='HomeScreen' 
                 screenOptions={{ 
-                    headerTitle: (props) =>  <SearchHeader {...props} />,
                     headerLeft: (props) => ( 
                         <Image
-                          style={{ width: 55, height: 40, marginLeft: 20, marginBottom: 10 }}
+                          style={{ width: 55, height: 40, marginLeft: 15, marginBottom: 10, marginRight: 0 }}
                           source={require('./src/images/logoRedi.png')}
                         />
                       ),
+                    
+                    headerTitle: () =>   <SearchHeader />,
                     headerRight: () => (
+                        
+                            
                         <ButtonHeader icon="bell" />
+                       
+                    
                       ),
 
 
@@ -69,13 +75,9 @@ function MyTabs() {
                 options={{
                     tabBarIcon: ({color, size}) => (
                         <Ionicons name="home" size={34} color={color} />
-                    ),
-                    
-                    headerTitle: 'Home',
-                    headerTintColor: 'white',
-                    tabBarLabel: '' ,
-                    
-                    
+                    ),   
+                    tabBarLabel: '',
+                     
                 }}
                 
             />
@@ -84,7 +86,7 @@ function MyTabs() {
                 component={CreadorEscenas}
                 options={{
                     tabBarIcon: ({color, size}) => (
-                        <Ionicons name="camera" size={34} color={color} />
+                        <Entypo name="circle-with-plus" size={38} color={color} />
                     ),
                    
                     headerTitle: 'Perfil',
@@ -146,7 +148,7 @@ function MyStack() {
             <Stack.Screen name="Tabs" component={MyTabs} 
             options={{
                
-                headerShown: false
+                headerShown: false,
                }}
             />
 
@@ -156,10 +158,34 @@ function MyStack() {
                
               }}/>
 
+            <Stack.Screen   name="NotificacionesScreen" component={NotificacionesScreen}  options={{
+               
+               headerTitle: "Notificaciones",
+               
+              }}/>
+            <Stack.Screen   name="VisualizarEscena" component={VisualizarEscena}  options={{
+               
+               headerTitle: "Escena",
+               
+              }}/>
+            <Stack.Screen   name="ComentariosScreen" component={ComentariosScreen}  options={{
+               
+               headerTitle: "Comentarios",
+               presentation: 'modal'
+              }}/>
+
             
 
         </Stack.Navigator>
     );
+}
+
+function StackHome () {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen />
+        </Stack.Navigator>
+    )
 }
 
 /* 

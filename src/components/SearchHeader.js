@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
 import{ Icon, Entypo, FontAwesome } from '@expo/vector-icons' 
 
@@ -17,13 +17,19 @@ export default function SearchHeader() {
 const styles = StyleSheet.create({
     searchContainer: {
       alignItems: 'center',
-      backgroundColor: 'red',
-      borderRadius: 5,
-    
+      backgroundColor: 'transparent',
+      borderRadius: 10,
+      width: 150,
+      marginLeft: 0,
+      marginRight: 0,
+      borderWidth: 1,
+      marginBottom: 10,
+      borderColor: '#9b9b9b'
     },
     
     searchInput: {
-      flex: 1,
-      height: 40,
+      height: 38,
+      
+      
     },
   });

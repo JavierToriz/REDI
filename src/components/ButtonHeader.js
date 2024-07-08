@@ -1,14 +1,18 @@
-//Este archivo contiene el componente de botones usados en la camara (flash, tomar foto, etc)
+//Este archivo contiene el componente del boton de notificaciones
 
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-import{ Entypo, FontAwesome } from '@expo/vector-icons' 
+import{ Entypo, FontAwesome } from '@expo/vector-icons' ;
+import { useNavigation } from '@react-navigation/native';
 
 
-export default function ButtonHeader ({ onPress, icon, color }) {
+export default function ButtonHeader ({ icon, color }) {
+
+    const navigation = useNavigation();
+
     return (
-        <TouchableOpacity onPress={onPress} style={styles.button}>
-            <FontAwesome name={icon} size={30} color={color ? color : 'red'}>
+        <TouchableOpacity onPress={() => navigation.navigate("NotificacionesScreen")} style={styles.button}>
+            <FontAwesome name={icon} size={30} color={color ? color : '#000000'}>
             </FontAwesome>
         </TouchableOpacity>
     )
@@ -16,7 +20,7 @@ export default function ButtonHeader ({ onPress, icon, color }) {
 
 const styles = StyleSheet.create({
     button: {
-       marginRight: 10
+       marginRight: 20
     },
     
 }) 
