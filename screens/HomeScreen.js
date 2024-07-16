@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
-import { View, Text, Button, StyleSheet,ScrollView, Image, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet,ScrollView, Image, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -31,6 +31,7 @@ function HomeScreen()  {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content"/>
     <ScrollView contentContainerStyle={[styles.containerScroll, { backgroundColor: scrollY > 50 ? '#f0f0f0' : '#fff' }]}
     onScroll={handleScroll}
     scrollEventThrottle={16}> 
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 350,
     padding: 20,
-    backgroundColor: '#000',
+    backgroundColor: '#01041C',
     alignItems: 'center',
   },
 

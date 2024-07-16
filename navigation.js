@@ -19,6 +19,7 @@ import CameraScreen from './screens/HomeScreen';
 import NotificacionesScreen from './screens/NotificacionesScreen';
 import VisualizarEscena from './screens/VisualizarEscena';
 import ComentariosScreen from './screens/ComentariosScreen';
+import PerfilScreen from './screens/PerfilScreen';
 
 // Header's component
 import ButtonHeader from './src/components/ButtonHeader';
@@ -56,7 +57,7 @@ function MyTabs() {
 
                     
 
-                    tabBarActiveTintColor: '#FFA001',
+                    tabBarActiveTintColor: '#6e00fa',
                     tabBarInactiveTintColor: '#CDCDE0',
                     tabBarStyle: [
                         {
@@ -92,6 +93,7 @@ function MyTabs() {
                     headerTitle: 'Perfil',
                     headerTintColor: '#fff',
                     tabBarLabel: '',
+                    headerShown: false
                      
 
 
@@ -99,17 +101,17 @@ function MyTabs() {
             />
 
             <Tab.Screen 
-                name="Renderizado de prueba" 
-                component={GustosScreen}
+                name="Perfil" 
+                component={PerfilScreen}
                 options={{
                     tabBarIcon: ({color, size}) => (
                         <Ionicons name="person" size={34} color={color} />
                     ),
                    
-                    headerTitle: 'Renderizado de prueba',
+                    headerTitle: 'Perfil',
                     
                     tabBarLabel: '', 
-                    headerShown: false,
+                    
 
 
                 }} 
@@ -155,7 +157,7 @@ function MyStack() {
             <Stack.Screen   name="CameraScreen" component={HomeScreen}  options={{
                
                headerTitle: "Camara",
-               
+               headerShown: false,
               }}/>
 
             <Stack.Screen   name="NotificacionesScreen" component={NotificacionesScreen}  options={{

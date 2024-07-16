@@ -20,6 +20,7 @@ export default function VisualizarEscena() {
         left={(props) => <Avatar.Text {...props} size={44} label="JT"/>} 
         title="Nombre "
         subtitle="70k seguidores"
+        titleStyle={styles.cardTtile}
         />
         <View style={styles.containerC}>
             <Entypo name="eye" size={34} color={'#9b9b9b'}/>
@@ -92,14 +93,18 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
         padding: 15,
-        borderRadius: 1,
+        borderRadius: 10,
         alignItems: 'center', 
-        backgroundColor: '#6A6BD2'
+        backgroundColor: '#6A1B9A'
     },
     buttonText: {
         
         color: '#fff',
         fontWeight: '600',
+    },
+    cardTtile: {
+        fontSize: 17,
+      fontWeight: "500"
     }
 
 

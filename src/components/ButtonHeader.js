@@ -12,7 +12,7 @@ export default function ButtonHeader ({ icon, color }) {
 
     return (
         <TouchableOpacity onPress={() => navigation.navigate("NotificacionesScreen")} style={styles.button}>
-            <FontAwesome name={icon} size={30} color={color ? color : '#000000'}>
+            <FontAwesome name={icon} size={30} color={color ? color : '#01041C'}>
             </FontAwesome>
         </TouchableOpacity>
     )
