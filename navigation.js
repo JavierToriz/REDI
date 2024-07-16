@@ -19,6 +19,7 @@ import CameraScreen from './screens/HomeScreen';
 import NotificacionesScreen from './screens/NotificacionesScreen';
 import VisualizarEscena from './screens/VisualizarEscena';
 import ComentariosScreen from './screens/ComentariosScreen';
+import WebViewScreen from './screens/WebView';
 
 // Header's component
 import ButtonHeader from './src/components/ButtonHeader';
@@ -174,7 +175,11 @@ function MyStack() {
                presentation: 'modal'
               }}/>
 
-            
+        <Stack.Screen
+                name="WebViewScreen"
+                component={WebViewScreen}
+                options={{ headerShown: false }}
+            />
 
         </Stack.Navigator>
     );

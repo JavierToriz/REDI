@@ -1,11 +1,65 @@
-import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image, SafeAreaView} from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image, Alert, SafeAreaView} from 'react-native'
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import { pathToRegistroUsuario } from '../path';
+import axios from 'axios';
 
 function RegisterScreen() {
   const navigation = useNavigation();
+  const [Nombre, setNombre] = useState('');
+  const [Apellidos, setApellidos] = useState('');
+  const [username, setusername] = useState('');
+  const [Nacimiento, setNacimiento] = useState('');
+  const [email, seemail] = useState('');
+  const [password1, setpassword1] = useState('');
+  const [password2, setpassword2] = useState('');
+  const [Genero, setGenero] = useState('');
+
+  const handleRegister = async () => {
+    if (password1 !== password2) {
+      Alert.alert('Las contraseñas no coinciden');
+      return;
+    }
+
+    const trimmedNombre = Nombre.trim();
+    const apellidosArray = Apellidos.split(' ');
+    if (apellidosArray.length < 2) {
+      Alert.alert('Por favor, ingresa ambos apellidos');
+      return;
+    }
+
+    const url = pathToRegistroUsuario;
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    const data = {
+      username: username.trim(),
+      nombre: trimmedNombre,
+      apellido_p: apellidosArray[0],
+      apellido_m: apellidosArray[1],
+      email: email.trim(),
+      password: password1.trim()
+    };
+    console.log(data)
+    try {
+      const res = await axios.post(url, data, { headers });
+      console.log("Respuesta JSON:", res.data);
+      Alert.alert('Usuario registrado exitosamente');
+      navigation.navigate("LogIn");
+    } catch (error) {
+      if (error.response) {
+        console.error(`Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`);
+        Alert.alert(error.response.data.message || 'Error al registrar usuario');
+      } else {
+        console.error(error.message);
+        Alert.alert('Error al realizar la solicitud');
+      }
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
     <ScrollView contentContainerStyle={styles.containerScroll}>
@@ -16,23 +70,31 @@ function RegisterScreen() {
             style={styles.input}
             placeholder="Nombre"
             keyboardType="name-phone-pad"
+            value={Nombre}
+            onChangeText={setNombre}
             />
             <TextInput
             style={styles.input}
             placeholder="Apellidos"
             keyboardType="name-phone-pad"
+            value={Apellidos}
+            onChangeText={setApellidos}
             />
             <TextInput
             style={styles.input}
             placeholder="Nombre de usaurio"
             keyboardType="name-phone-pad"
+            value={username}
+            onChangeText={setusername}
             />
-
+ 
             <View style={styles.inputContainer}>
                 <Icon name="birthday-cake" size={30} color="#007bff" style={styles.icon} />
                 <TextInput  
                 style={styles.input2}
                 placeholder="Fecha de Nacimiento"
+                value={Nacimiento}
+                onChangeText={setNacimiento}
                 />
             </View>
 
@@ -41,7 +103,8 @@ function RegisterScreen() {
                 <TextInput  
                 style={styles.input2}
                 placeholder="Genero"
-                
+                value={Genero}
+                onChangeText={setGenero}
                 />
             </View>
 
@@ -51,6 +114,8 @@ function RegisterScreen() {
                 style={styles.input2}
                 placeholder="Correo electrónico"
                 keyboardType="email-address"
+                value={email}
+                onChangeText={seemail}
                 />
             </View>
 
@@ -60,6 +125,8 @@ function RegisterScreen() {
                 style={styles.input2}
                 placeholder="Contraseña"
                 secureTextEntry
+                value={password1}
+                onChangeText={setpassword1}
                 />
             </View>
 
@@ -67,9 +134,11 @@ function RegisterScreen() {
             style={styles.input}
             placeholder=" Confirmar contraseña"
             secureTextEntry
+            value={password2}
+            onChangeText={setpassword2}
             />
             
-            <TouchableOpacity style={styles.button}  onPress={() => navigation.navigate("GustosScreen")}>
+            <TouchableOpacity style={styles.button}  onPress={handleRegister}>
                 <Text style={styles.buttonText}>CONTINUAR</Text>
             </TouchableOpacity>
             
@@ -93,6 +162,7 @@ const styles = StyleSheet.create({
         padding: 20,
         justifyContent: 'center',
         backgroundColor: '#fff',
+        color: '#fff',
         
       },
       logoContainer: {

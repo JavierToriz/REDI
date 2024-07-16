@@ -11,6 +11,7 @@ function LogIn() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+
   const token = async () => {
     const url = pathToToken;
     const headers = {
@@ -29,10 +30,9 @@ function LogIn() {
     try {
       const res = await axios.post(url, data, { headers });
       console.log("Respuesta JSON:", res.data);
-      // Aquí podrías guardar el token en AsyncStorage o en el estado de la aplicación
       Alert.alert('Inicio de sesión exitoso');
       await AsyncStorage.setItem('userToken', res.data['access_token']);
-      navigation.navigate("Tabs");
+      navigation.navigate("GustosScreen");
     } catch (error) {
       if (error.response) {
         console.error(`Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`);
@@ -71,7 +71,7 @@ function LogIn() {
       <TouchableOpacity style={styles.button} onPress={token}>
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
         <Text style={styles.register}>¿Aún no tienes cuenta? Regístrate</Text>
       </TouchableOpacity>
       <StatusBar style='auto' />

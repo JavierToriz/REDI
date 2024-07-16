@@ -3,7 +3,7 @@ import React from 'react'
 import { Avatar, Card } from 'react-native-paper'
 import { Entypo } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-
+import { pathToWatchWebGL } from './path';
 
 export default function VisualizarEscena() {
     
@@ -12,7 +12,9 @@ export default function VisualizarEscena() {
     return (
 
     <View style={styles.container}>
-      <Image source={require('../src/images/miniatura.jpg')} style={styles.miniatura}/>
+        <TouchableOpacity onPress={() => navigation.navigate('WebViewScreen', { url: pathToWatchWebGL })}>
+        <Image source={require('../src/images/miniatura.jpg')} style={styles.miniatura} />
+      </TouchableOpacity>
       <Text style={styles.title}> Titulo </Text>
       <View style={styles.containerB}>
         <Card.Title 
@@ -40,8 +42,6 @@ export default function VisualizarEscena() {
         <TouchableOpacity style={styles.button}  onPress={() => navigation.navigate("ComentariosScreen")}>
             <Text style={styles.buttonText}> 100 comentarios</Text>
         </TouchableOpacity>
-
-
 
     </View>
   )
