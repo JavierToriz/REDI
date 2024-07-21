@@ -12,7 +12,8 @@ import {
   import { useNavigation } from "@react-navigation/native";
   import { pathToGustosUsuario } from "../path";
   import axios from "axios";
-  
+  import AsyncStorage from '@react-native-async-storage/async-storage';
+
   function GustosScreen() {
     const navigation = useNavigation();
     const [selectedThemes, setSelectedThemes] = useState([]);
@@ -29,11 +30,13 @@ import {
   
     const handleCreateAccount = async () => {
       console.log("Temas seleccionados:", selectedThemes);
-  
+      const storedItemStr = await AsyncStorage.getItem("userToken");
+      const token = JSON.parse(storedItemStr);
       const url = pathToGustosUsuario;
       const headers = {
         Accept: "application/json",
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${token.value}`,
       };
       const data = {
         Deportes: selectedThemes.includes("deportes"),
@@ -54,6 +57,8 @@ import {
           console.error(
             `Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`
           );
+          console.log("Detalle del error:", error.response.data.detail);
+
           Alert.alert(
             error.response.data.message || "Error al registrar intereses"
           );

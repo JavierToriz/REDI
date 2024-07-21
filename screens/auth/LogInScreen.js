@@ -38,13 +38,26 @@ function LogIn() {
       const res = await axios.post(url, data, { headers });
       console.log("Respuesta JSON:", res.data);
       Alert.alert("Inicio de sesión exitoso");
-      await AsyncStorage.setItem("userToken", res.data["access_token"]);
+      /// await AsyncStorage.setItem("userToken", res.data["access_token"]);
+      const saveTokenWithExpiry = async (token, expiryTime) => {
+        const now = new Date();
+        const item = {
+            value: token,
+            expiry: now.getTime() + expiryTime, // expiryTime in milliseconds
+        };
+        await AsyncStorage.setItem("userToken", JSON.stringify(item));
+    };
+    
+    // Usage:
+    const token = res.data["access_token"];
+    const expiryTime = 3600 * 500; // 30 mn in milliseconds
+    await saveTokenWithExpiry(token, expiryTime);
       navigation.navigate("GustosScreen");
     } catch (error) {
       if (error.response) {
-        console.error(
+        /*console.error(
           `Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`
-        );
+        )*/
         Alert.alert("Credenciales inválidas");
       } else {
         Alert.alert("Error al realizar la solicitud");
@@ -108,12 +121,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   logo: {
-    width: 80,
-    height: 50,
-    marginBottom: 20,
+    width: 65,
+    height: 35,
+    marginBottom: 0
   },
   logoText: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     marginLeft: 20,
   },

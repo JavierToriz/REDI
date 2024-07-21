@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -6,53 +7,111 @@ import {
   ScrollView,
   Image,
   StatusBar,
-  FlatList,
   Dimensions,
 } from "react-native";
-import React from "react";
-import LinearGradient from "react-native-linear-gradient";
-import ImageGrid from "../src/components/ImageGrid";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { pathToMyProfile, pathMyFollowers, pathMyPublicaciones } from "./path";
 
 export default function PerfilScreen() {
-  const escenas = [
-    { id: "1", source: require("../src/images/miniatura.jpg") },
-    { id: "2", source: require("../src/images/miniatura.jpg") },
-    { id: "3", source: require("../src/images/miniatura.jpg") },
-    { id: "4", source: require("../src/images/miniatura.jpg") },
-    { id: "5", source: require("../src/images/miniatura.jpg") },
-    { id: "6", source: require("../src/images/miniatura.jpg") },
-    { id: "7", source: require("../src/images/miniatura.jpg") },
-    { id: "8", source: require("../src/images/miniatura.jpg") },
-    { id: "9", source: require("../src/images/miniatura.jpg") },
-  ];
+  const [dataUser, setDataUser] = useState(null);
+  const [dataFollowers, setDataFollowers] = useState(null);
+  const [dataPublicaciones, setDataPublicaciones] = useState(null);
+  const [numberOfScenes, setNumberOfScenes] = useState(0);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const storedItemStr = await AsyncStorage.getItem("userToken");
+        if (!storedItemStr) throw new Error("No token found");
+
+        const token = JSON.parse(storedItemStr);
+
+        const [profileResponse, followersResponse, publicacionesResponse] = await Promise.all([
+          axios.get(pathToMyProfile, {
+            headers: { Authorization: `Bearer ${token.value}` },
+          }),
+          axios.get(pathMyFollowers, {
+            headers: { Authorization: `Bearer ${token.value}` },
+          }),
+          axios.get(pathMyPublicaciones, {
+            headers: { Authorization: `Bearer ${token.value}` },
+          }),
+        ]);
+
+        setDataUser(profileResponse.data);
+        setDataFollowers(followersResponse.data);
+        setDataPublicaciones(publicacionesResponse.data);
+        setNumberOfScenes(publicacionesResponse.data.publicaciones); 
+
+        console.log(dataUser);
+        console.log(dataFollowers);
+        console.log(dataPublicaciones);
+        console.log(numberOfScenes);
+
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+  // Actualizar `escenas` para reflejar el número obtenido
+  const escenas = Array.from({ length: numberOfScenes }, (_, i) => ({
+    id: (i + 1).toString(),
+    source: require("../src/images/miniatura.jpg"),
+  }));
+
+  const getProfileImage = () => {
+    if (!dataUser) return require("../src/images/miniatura.jpg"); // Imagen por defecto si no hay datos
+
+    switch (dataUser.usuario.genero) {
+      case 'Masculino':
+        return require("../src/images/miniatura.jpg"); // Imagen para masculino
+      case 'Femenino':
+        return require("../src/images/images.jpeg"); // Imagen para femenino
+      default:
+        return require("../src/images/miniatura.jpg"); // Imagen por defecto
+    }
+  };
+
+  
+  if (!dataUser || !dataFollowers || !dataPublicaciones) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+  
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
       <ScrollView contentContainerStyle={styles.containerScroll}>
         <View style={styles.header} />
         <View style={styles.profileContent}>
           <Image
-            source={require("../src/images/miniatura.jpg")} // Ruta de la imagen
+            source={getProfileImage()}
             style={styles.profileImage}
           />
-          <Text style={styles.profileName}>Javier Toriz</Text>
+          <Text style={styles.profileName}>{dataUser.usuario.username || "Usuario"}</Text>
           <Text style={styles.profileDescription}>
-            Apasionado por la naturaleza, la ciencia ficción y por la vida al
-            aire libre.
+            {dataUser.description || "Apasionado por la naturaleza, la ciencia ficción y por la vida al aire libre."}
           </Text>
         </View>
         <View style={styles.numbersContent}>
           <View style={styles.numbersItem}>
-            <Text style={styles.profileName}>0</Text>
+            <Text style={styles.profileName}>{dataPublicaciones.publicaciones}</Text>
             <Text style={styles.profileDescription}>Publicaciones</Text>
           </View>
           <View style={styles.numbersItem}>
-            <Text style={styles.profileName}>0</Text>
+            <Text style={styles.profileName}>{dataFollowers.followers}</Text>
             <Text style={styles.profileDescription}>Seguidores</Text>
           </View>
           <View style={styles.numbersItem}>
-            <Text style={styles.profileName}>0</Text>
+            <Text style={styles.profileName}>{dataFollowers.myFollows}</Text>
             <Text style={styles.profileDescription}>Seguidos</Text>
           </View>
         </View>
@@ -83,7 +142,7 @@ const styles = StyleSheet.create({
   },
   profileContent: {
     alignItems: "center",
-    marginTop: -50, // Para que la imagen se superponga al header
+    marginTop: -50,
   },
   profileImage: {
     width: 100,
@@ -113,7 +172,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   imageContent: {
     alignItems: "center",
     justifyContent: "center",
@@ -122,13 +180,18 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   imageContainer: {
-    width: Dimensions.get("window").width / 3 - 10, // Dividir el ancho entre el número de columnas menos el margen
-    height: Dimensions.get("window").width / 3 - 10, // Hacer la altura igual al ancho para que las imágenes sean cuadradas
+    width: Dimensions.get("window").width / 3 - 10,
+    height: Dimensions.get("window").width / 3 - 10,
     margin: 5,
   },
   image: {
     width: 120,
     height: 120,
     borderRadius: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

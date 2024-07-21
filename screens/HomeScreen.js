@@ -39,7 +39,10 @@ function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar
+        barStyle="dark-content" // Letras negras
+        backgroundColor="white" // Fondo blanco
+      />
       <ScrollView
         contentContainerStyle={[
           styles.containerScroll,

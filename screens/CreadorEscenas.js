@@ -1,31 +1,30 @@
-//Screen creador de escenas
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import {
   View,
   Text,
-  Button,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Entypo, Ionicons, Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 function CreadorEscenas() {
   const navigation = useNavigation();
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <Text style={styles.text}>Crear una escena</Text>
-      <Text style={styles.text2}>Permite el acceso a la camara</Text>
-      <View style={styles.container2}>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => navigation.navigate("CameraScreen")}
-        >
-          <Ionicons name="camera" size={34} color={"white"} />
-        </TouchableOpacity>
+    <View style={styles.safeContainer}>
+      <StatusBar backgroundColor="#01041C" barStyle="light-content" />
+      <View style={styles.container}>
+        <Text style={styles.text}>Crear una escena</Text>
+        <Text style={styles.text2}>Permite el acceso a la cámara</Text>
+        <View style={styles.container2}>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => navigation.navigate("CameraScreen")}
+          >
+            <Ionicons name="camera" size={34} color={"white"} />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -34,6 +33,7 @@ function CreadorEscenas() {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
+    backgroundColor: "#01041C",
   },
   container: {
     flex: 1,

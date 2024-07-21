@@ -1,23 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   Button,
-  TouchableOpacity,
   StyleSheet,
   Image,
+  StatusBar,
+  TouchableOpacity,
+  FlatList,
 } from "react-native";
 import {
   useCameraPermissions,
   CameraView,
-  Camera,
-  CameraType,
 } from "expo-camera";
-import ButtonCamera from "../src/components/buttonCamera";
 import * as FileSystem from "expo-file-system";
-import { FontAwesome } from "@expo/vector-icons";
+import ButtonCamera from "../src/components/buttonCamera";
 import { useNavigation } from "@react-navigation/native";
-import { Icon } from "react-native-vector-icons/FontAwesome";
 
 function CameraScreen() {
   const [facing, setFacing] = useState("back");
@@ -25,8 +23,8 @@ function CameraScreen() {
   const [image, setImage] = useState(null);
   const [flash, setFlash] = useState("off");
   const [imageCount, setImageCount] = useState(0);
+  const [imageUris, setImageUris] = useState([]); // New state for image URIs
   const cameraRef = useRef(null);
-
   const navigation = useNavigation();
 
   if (!permission) {
@@ -39,41 +37,65 @@ function CameraScreen() {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: "center" }}>
-          We need your permission to show the camera
+          Necesitas dar permisos para acceder a tu cámara.
         </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing((current) => (current === "back" ? "front" : "back"));
-    console.log(facing);
-  }
-  function flashFunction() {
-    setFlash((current) => (current === "off" ? "on" : "off"));
-    console.log(flash);
-  }
+  const saveImage = async (uri) => {
+    try {
+      // Define the directory and file path
+      const directoryUri = `${FileSystem.documentDirectory}photos/`;
+      const fileUri = `${directoryUri}${Date.now()}.jpg`;
+
+      // Create the directory if it does not exist
+      await FileSystem.makeDirectoryAsync(directoryUri, { intermediates: true });
+
+      // Move the file to the new location
+      await FileSystem.moveAsync({
+        from: uri,
+        to: fileUri,
+      });
+
+      console.log("Image saved to:", fileUri);
+      return fileUri;
+    } catch (error) {
+      console.error("Error saving image:", error);
+    }
+  };
 
   const takePicture = async () => {
     if (cameraRef) {
       try {
         const data = await cameraRef.current.takePictureAsync();
         console.log(data);
-        setImage(data.uri);
+        const savedImageUri = await saveImage(data.uri);
+        setImage(savedImageUri);
         setImageCount(imageCount + 1);
+        setImageUris((prevUris) => [...prevUris, savedImageUri]); // Update image URIs
       } catch (e) {
         console.log(e);
       }
     }
   };
 
+  const openGallery = () => {
+    navigation.navigate('GalleryScreen', { imageUris }); // Navigate to gallery screen with image URIs
+  };
+
   return (
     <View style={styles.container}>
+      <StatusBar
+        barStyle="dark-content" // Letras negras
+        backgroundColor="white" // Fondo blanco
+      />
       <View style={styles.containerBotones}>
         <ButtonCamera
           icon="cross"
           size={34}
+          color="black"
           onPress={() => navigation.goBack()}
         />
       </View>
@@ -86,8 +108,8 @@ function CameraScreen() {
       >
         <ButtonCamera
           title={"Girar"}
-          icon="camera"
-          onPress={toggleCameraFacing}
+          icon="cycle"
+          onPress={() => setFacing(facing === "back" ? "front" : "back")}
         />
         <ButtonCamera
           title={"Tomar foto"}
@@ -96,11 +118,14 @@ function CameraScreen() {
         />
       </CameraView>
       <View style={styles.preview}>
-        <ButtonCamera size={46} icon="circle" onPress={takePicture} />
-
+        <ButtonCamera size={40} icon="circle" onPress={takePicture} />
         <View style={styles.preview2}>
-          <Text style={styles.counter}>Photos Taken: {imageCount}</Text>
-          {image && <Image source={{ uri: image }} style={styles.image} />}
+          <Text style={styles.counter}>Número de fotos: {imageCount}</Text>
+          {image && (
+            <TouchableOpacity onPress={openGallery}>
+              <Image source={{ uri: image }} style={styles.image} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -110,44 +135,45 @@ function CameraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8,
     backgroundColor: "#000",
     justifyContent: "center",
-    paddingBottom: 15,
   },
   containerBotones: {
     padding: 10,
-    marginTop: 10,
+    marginTop: 0,
     alignItems: "flex-end",
-    backgroundColor: "green",
+    backgroundColor: "white",
   },
   preview: {
     flex: 0.25,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "red",
+    backgroundColor: "white",
   },
   preview2: {
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: "blue",
-    marginTop: 10,
-  },
-  previewImage: {
-    width: "100%",
+    backgroundColor: "white",
+    marginBottom: 0,
   },
   image: {
     width: 80,
     height: 80,
+    borderColor: "black",
+    borderWidth: 3,
+    borderRadius: 5
   },
   camera: {
     flex: 1,
     borderRadius: 20,
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   counter: {
-    color: "white",
+    fontSize: 16,
+    color: "black",
   },
 });
 

@@ -1,4 +1,9 @@
-export const pathToToken = 'http://192.168.137.173:8001/token';
-export const pathToRegistroUsuario = 'http://192.168.137.173:8002/create_usuario';
-export const pathToGustosUsuario = 'http://192.168.137.173:8002/create_interes_usuario';
-export const pathToWatchWebGL = 'http://192.168.137.173:8003/watchwebgl/1/index.html';
+export const pathToToken = 'http://192.168.8.43:8001/token';
+export const pathToRegistroUsuario = 'http://192.168.8.43:8002/create_usuario';
+export const pathToGustosUsuario = 'http://192.168.8.43:8002/create_interes_usuario';
+export const pathToCheckGustos = 'http://192.168.8.43:8002/checkIntereses';
+export const pathToMyProfile = 'http://192.168.8.43:8002/myProfile';
+export const pathMyFollowers = 'http://192.168.8.43:8003/myFollowers';
+export const pathMyPublicaciones = 'http://192.168.8.43:8004/myPublicaciones';
+export const pathUploadFotos = 'http://192.168.8.43:8005/upload_photos';
+export const pathToWatchWebGL = 'http://192.168.8.43:8003/watchwebgl/1/index.html';

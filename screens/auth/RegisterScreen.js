@@ -5,7 +5,6 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  Image,
   Alert,
   SafeAreaView,
 } from "react-native";
@@ -13,26 +12,33 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
-import { pathToRegistroUsuario } from "../path";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
+import { pathToRegistroUsuario } from "../path";
 
 function RegisterScreen() {
   const navigation = useNavigation();
   const [Nombre, setNombre] = useState("");
   const [Apellidos, setApellidos] = useState("");
-  const [username, setusername] = useState("");
-  const [Nacimiento, setNacimiento] = useState("");
-  const [email, seemail] = useState("");
-  const [password1, setpassword1] = useState("");
-  const [password2, setpassword2] = useState("");
+  const [username, setUsername] = useState("");
+  const [Nacimiento, setNacimiento] = useState(new Date());
+  const [email, setEmail] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
   const [Genero, setGenero] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleRegister = async () => {
     if (password1 !== password2) {
       Alert.alert("Las contraseñas no coinciden");
       return;
     }
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Correo electrónico inválido");
+      return;
+    }
     const trimmedNombre = Nombre.trim();
     const apellidosArray = Apellidos.split(" ");
     if (apellidosArray.length < 2) {
@@ -52,8 +58,10 @@ function RegisterScreen() {
       apellido_m: apellidosArray[1],
       email: email.trim(),
       password: password1.trim(),
+      nacimiento: Nacimiento.toISOString(), // Ajustar el formato de fecha si es necesario
+      genero: Genero, // Asegúrate de que Genero sea recogido del estado adecuadamente
     };
-    console.log(data);
+
     try {
       const res = await axios.post(url, data, { headers });
       console.log("Respuesta JSON:", res.data);
@@ -61,12 +69,24 @@ function RegisterScreen() {
       navigation.navigate("LogIn");
     } catch (error) {
       if (error.response) {
-        console.error(
-          `Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`
-        );
-        Alert.alert(
-          error.response.data.message || "Error al registrar usuario"
-        );
+        const status = error.response.status;
+        if (status === 400) {
+          // Si el correo electrónico ya está registrado
+          if (error.response.data.detail === "Email already registered") {
+            Alert.alert("El correo electrónico ya está registrado");
+          }
+          // Si el nombre de usuario ya está registrado
+          else if (error.response.data.detail === "Username already registered") {
+            Alert.alert("El nombre de usuario ya está registrado");
+          }
+          // Otro tipo de error
+          else {
+            Alert.alert(error.response.data.message || "Error al registrar usuario");
+          }
+        } else {
+          console.error(`Error al realizar la solicitud: ${status} - ${error.response.statusText}`);
+          Alert.alert("Error al registrar usuario");
+        }
       } else {
         console.error(error.message);
         Alert.alert("Error al realizar la solicitud");
@@ -74,9 +94,20 @@ function RegisterScreen() {
     }
   };
 
+  const showDatePickerHandler = () => {
+    setShowDatePicker(true);
+  };
+
+  const handleDateChange = (event, date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setNacimiento(date);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.containerScroll}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <Text style={styles.title}>Crea una nueva cuenta</Text>
         <Text style={styles.subtitle}>
           Rellena la información para crear tu cuenta
@@ -85,23 +116,20 @@ function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Nombre"
-          keyboardType="name-phone-pad"
           value={Nombre}
           onChangeText={setNombre}
         />
         <TextInput
           style={styles.input}
           placeholder="Apellidos"
-          keyboardType="name-phone-pad"
           value={Apellidos}
           onChangeText={setApellidos}
         />
         <TextInput
           style={styles.input}
-          placeholder="Nombre de usaurio"
-          keyboardType="name-phone-pad"
+          placeholder="Nombre de usuario"
           value={username}
-          onChangeText={setusername}
+          onChangeText={setUsername}
         />
 
         <View style={styles.inputContainer}>
@@ -110,58 +138,53 @@ function RegisterScreen() {
             size={30}
             color="#007bff"
             style={styles.icon}
+            onPress={showDatePickerHandler}
           />
-          <TextInput
-            style={styles.input2}
-            placeholder="Fecha de Nacimiento"
+          <Text style={styles.dateText}>{formatDate(Nacimiento)}</Text>
+        </View>
+
+        {showDatePicker && (
+          <DateTimePicker
             value={Nacimiento}
-            onChangeText={setNacimiento}
+            mode="date"
+            display="spinner"
+            onChange={handleDateChange}
+            style={styles.datePicker}
           />
-        </View>
+        )}
 
-        <View style={styles.inputContainer}>
-          <Icon
-            name="venus-mars"
-            size={28}
-            color="#007bff"
-            style={styles.icon}
-          />
-          <TextInput
-            style={styles.input2}
-            placeholder="Genero"
-            value={Genero}
-            onChangeText={setGenero}
-          />
+<View style={styles.inputContainer}>
+          <Icon name="venus-mars" size={28} color="#007bff" style={styles.icon} />
+          <Picker
+            selectedValue={Genero}
+            style={styles.picker}
+            onValueChange={(itemValue) => setGenero(itemValue)}
+          >
+            <Picker.Item label="Masculino" value="Masculino" />
+            <Picker.Item label="Femenino" value="Femenino" />
+            <Picker.Item label="Prefiero no decirlo" value="NoEspecificado" />
+          </Picker>
         </View>
-
-        <View style={styles.inputContainer}>
-          <Icon name="envelope" size={28} color="#007bff" style={styles.icon} />
-          <TextInput
-            style={styles.input2}
-            placeholder="Correo electrónico"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={seemail}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Icon name="lock" size={36} color="#007bff" style={styles.icon} />
-          <TextInput
-            style={styles.input2}
-            placeholder="Contraseña"
-            secureTextEntry
-            value={password1}
-            onChangeText={setpassword1}
-          />
-        </View>
-
         <TextInput
           style={styles.input}
-          placeholder=" Confirmar contraseña"
+          placeholder="Correo electrónico"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          secureTextEntry
+          value={password1}
+          onChangeText={setPassword1}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirmar contraseña"
           secureTextEntry
           value={password2}
-          onChangeText={setpassword2}
+          onChangeText={setPassword2}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
@@ -174,41 +197,20 @@ function RegisterScreen() {
   );
 }
 
+const formatDate = (date) => {
+  const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  return formattedDate;
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: "center",
     backgroundColor: "#fff",
+    paddingHorizontal: 20,
   },
-  containerScroll: {
-    padding: 20,
+  scrollView: {
+    flexGrow: 1,
     justifyContent: "center",
-    backgroundColor: "#fff",
-    color: "#fff",
-  },
-  logoContainer: {
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginBottom: 50,
-    flexDirection: "row",
-  },
-  logo: {
-    width: 80,
-    height: 50,
-    marginBottom: 20,
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginLeft: 20,
-  },
-  inputContainer: {
-    flexDirection: "row",
-  },
-
-  icon: {
-    marginRight: 10,
   },
   title: {
     fontSize: 28,
@@ -221,36 +223,48 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: "gray",
   },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  dateText: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginLeft: 10,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 30,
+    marginBottom: 20,
   },
-  input2: {
+  picker: {
+    flex: 1,
+    height: 40,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    padding: 10,
-    marginBottom: 30,
-    width: "90%",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
   },
-
   button: {
     backgroundColor: "#6e00fa",
-    padding: 15,
+    paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom: 20,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-  register: {
-    marginTop: 40,
-    textAlign: "center",
-    color: "#6e00fa",
   },
 });
 
