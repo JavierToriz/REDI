@@ -58,8 +58,8 @@ function RegisterScreen() {
       apellido_m: apellidosArray[1],
       email: email.trim(),
       password: password1.trim(),
-      nacimiento: Nacimiento.toISOString(), // Ajustar el formato de fecha si es necesario
-      genero: Genero, // Asegúrate de que Genero sea recogido del estado adecuadamente
+      nacimiento: Nacimiento.toISOString(), 
+      genero: Genero,
     };
 
     try {

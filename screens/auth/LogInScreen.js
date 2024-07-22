@@ -81,7 +81,6 @@ function LogIn() {
       <TextInput
         style={styles.input}
         placeholder="user1"
-        autoCapitalize="none"
         value={username}
         onChangeText={setUsername}
       />

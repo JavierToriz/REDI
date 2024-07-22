@@ -25,5 +25,6 @@ export default function ButtonHeader({ icon, color }) {
 const styles = StyleSheet.create({
   button: {
     marginRight: 20,
+    marginBottom: 10
   },
 });

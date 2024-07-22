@@ -42,12 +42,13 @@ export default function PerfilScreen() {
         setDataUser(profileResponse.data);
         setDataFollowers(followersResponse.data);
         setDataPublicaciones(publicacionesResponse.data);
-        setNumberOfScenes(publicacionesResponse.data.publicaciones); 
 
-        console.log(dataUser);
-        console.log(dataFollowers);
-        console.log(dataPublicaciones);
-        console.log(numberOfScenes);
+        // Verifica si publicacionesResponse.data.publicaciones es un número válido
+        setNumberOfScenes(publicacionesResponse.data.publicaciones.length || 0);
+        
+        console.log(profileResponse.data);
+        console.log(followersResponse.data);
+        console.log(publicacionesResponse.data);
 
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -57,11 +58,16 @@ export default function PerfilScreen() {
     fetchProfileData();
   }, []);
 
+  // Convertir Base64 a URL de datos
+  const getImageSource = (base64Image) => {
+    return `data:image/jpeg;base64,${base64Image}`;
+  };
+
   // Actualizar `escenas` para reflejar el número obtenido
-  const escenas = Array.from({ length: numberOfScenes }, (_, i) => ({
-    id: (i + 1).toString(),
-    source: require("../src/images/miniatura.jpg"),
-  }));
+  const escenas = dataPublicaciones?.publicaciones?.map((pub) => ({
+    id: pub.id.toString(),
+    source: getImageSource(pub.imagen),
+  })) || [];
 
   const getProfileImage = () => {
     if (!dataUser) return require("../src/images/miniatura.jpg"); // Imagen por defecto si no hay datos
@@ -76,7 +82,6 @@ export default function PerfilScreen() {
     }
   };
 
-  
   if (!dataUser || !dataFollowers || !dataPublicaciones) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
@@ -84,7 +89,6 @@ export default function PerfilScreen() {
       </SafeAreaView>
     );
   }
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,22 +107,22 @@ export default function PerfilScreen() {
         </View>
         <View style={styles.numbersContent}>
           <View style={styles.numbersItem}>
-            <Text style={styles.profileName}>{dataPublicaciones.publicaciones}</Text>
+            <Text style={styles.profileName}>{dataPublicaciones.publicaciones.length || 0}</Text>
             <Text style={styles.profileDescription}>Publicaciones</Text>
           </View>
           <View style={styles.numbersItem}>
-            <Text style={styles.profileName}>{dataFollowers.followers}</Text>
+            <Text style={styles.profileName}>{dataFollowers.followers || 0}</Text>
             <Text style={styles.profileDescription}>Seguidores</Text>
           </View>
           <View style={styles.numbersItem}>
-            <Text style={styles.profileName}>{dataFollowers.myFollows}</Text>
+            <Text style={styles.profileName}>{dataFollowers.myFollows || 0}</Text>
             <Text style={styles.profileDescription}>Seguidos</Text>
           </View>
         </View>
         <View style={styles.imageContent}>
           {escenas.map((item) => (
             <View key={item.id} style={styles.imageContainer}>
-              <Image source={item.source} style={styles.image} />
+              <Image source={{ uri: item.source }} style={styles.image} />
             </View>
           ))}
         </View>
@@ -185,8 +189,8 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   image: {
-    width: 120,
-    height: 120,
+    width: "100%",
+    height: "100%",
     borderRadius: 1,
   },
   loadingContainer: {

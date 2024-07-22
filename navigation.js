@@ -29,7 +29,9 @@ import VisualizarEscena from "./screens/VisualizarEscena";
 import ComentariosScreen from "./screens/ComentariosScreen";
 import PerfilScreen from "./screens/PerfilScreen";
 import WebViewScreen from "./screens/WebView";
-import SuccessScreen from "./screens/succes"
+import SuccessScreen from "./screens/succes";
+import CreatePublication from "./screens/CreatePublication";
+import PublicationSucces from "./screens/PublicationSucces";
 
 // Header's component
 import ButtonHeader from "./src/components/ButtonHeader";
@@ -234,6 +236,16 @@ function MyStack() {
         component={WebViewScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="CreatePublication"
+        component={CreatePublication}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PublicationSucces"
+        component={PublicationSucces}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -249,7 +261,7 @@ const styles = StyleSheet.create({
   },
   headerLogo: {
     width: 55,
-    height: 40,
+    height: 36,
     marginLeft: 15,
     marginBottom: 10,
     marginRight: 0,

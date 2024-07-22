@@ -3,7 +3,6 @@ import React from "react";
 import { Avatar, Card } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { pathToWatchWebGL } from "./path";
 
 export default function VisualizarEscena() {
   const navigation = useNavigation();
@@ -12,7 +11,7 @@ export default function VisualizarEscena() {
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("WebViewScreen", { url: pathToWatchWebGL })
+          navigation.navigate("WebViewScreen", { path: 1 })
         }
       >
         <Image

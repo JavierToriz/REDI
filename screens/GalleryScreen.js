@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Importa FontAwesome
-import { pathUploadFotos } from "./path";
+import { pathUploadFotos, pathToPublicationForAdminNewPublication } from "./path";
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,6 +24,42 @@ function GalleryScreen({ route, navigation }) {
   const handleSwitchToggle = (value) => {
     setIsModel(value);
   };
+
+  const sendNotification = async (id) => {
+    const url = pathToPublicationForAdminNewPublication;
+    const storedItemStr = await AsyncStorage.getItem("userToken");
+    const token = JSON.parse(storedItemStr);
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      'Authorization': `Bearer ${token.value}`,
+    };
+    const data = {
+      id_path_fotos: Math.floor(id),
+    };
+  
+    try {
+      const res = await axios.post(url, data, { headers });
+      console.log("Respuesta completa:", res);
+      console.log("Respuesta JSON:", res.data);
+      console.log("Status:", res.status);
+      console.log("Headers:", res.headers);
+  
+      Alert.alert("Notificación enviada exitosamente");
+    } catch (error) {
+      if (error.response) {
+
+        console.error("Error response data:", error.response.data);
+        console.error("Error response status:", error.response.status);
+        console.error("Error response headers:", error.response.headers);
+      } else if (error.request) {
+        console.error("Error request data:", error.request);
+      } else {
+        console.error("Error message:", error.message);
+      }
+      Alert.alert("Error al notificar");
+    }
+  }
 
   const handleActionButtonPress = async () => {
     setIsLoading(true); // Mostrar el indicador de carga
@@ -51,7 +87,7 @@ function GalleryScreen({ route, navigation }) {
       });
 
       if (response.status === 200) {
-        console.log(objetivo);
+        sendNotification(response.data.id);
         navigation.navigate("SuccessScreen", { objetivo });
       } else {
         Alert.alert("Error", `No se pudieron subir las fotos: ${response.statusText}`);
@@ -103,7 +139,7 @@ function GalleryScreen({ route, navigation }) {
           disabled={isLoading} // Deshabilitar el botón si está cargando
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color="#fff" style={styles.indicator} />
           ) : (
             <>
               <Text style={styles.buttonText}>Enviar</Text>
@@ -178,6 +214,9 @@ const styles = StyleSheet.create({
     color: "white",
     marginHorizontal: 10,
     fontSize: 16,
+  },
+  indicator: {
+    paddingHorizontal: 10,
   },
 });
 
