@@ -36,6 +36,7 @@ import PublicationSucces from "./screens/PublicationSucces";
 // Header's component
 import ButtonHeader from "./src/components/ButtonHeader";
 import SearchHeader from "./src/components/SearchHeader";
+import HeaderLeft from './src/components/HeaderLeft';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,12 +47,8 @@ function MyTabs() {
     <Tab.Navigator
       initialRouteName="HomeScreen"
       screenOptions={{
-        headerLeft: (props) => (
-          <Image
-            style={styles.headerLogo}
-            source={require("./src/images/logoRedi.png")}
-          />
-        ),
+        headerLeft: () => <HeaderLeft />,
+        
         headerTitle: () => <SearchHeader />,
         headerRight: () => <ButtonHeader icon="bell" />,
         tabBarActiveTintColor: "#6e00fa",

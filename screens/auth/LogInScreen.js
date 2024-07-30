@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { pathToToken } from "../path";
+import { pathToToken, pathToCheckGustos } from "../path";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -26,38 +26,52 @@ function LogIn() {
       "Content-Type": "application/x-www-form-urlencoded",
     };
     const data = new URLSearchParams({
-      grant_type: "",
+      grant_type: "password",
       username: username,
       password: password,
-      scope: "",
-      client_id: "",
-      client_secret: "",
+      scope: "read",
+      client_id: "your-client-id",
+      client_secret: "your-client-secret",
     });
 
     try {
       const res = await axios.post(url, data, { headers });
       console.log("Respuesta JSON:", res.data);
       Alert.alert("Inicio de sesión exitoso");
-      /// await AsyncStorage.setItem("userToken", res.data["access_token"]);
+
       const saveTokenWithExpiry = async (token, expiryTime) => {
         const now = new Date();
         const item = {
-            value: token,
-            expiry: now.getTime() + expiryTime, // expiryTime in milliseconds
+          value: token,
+          expiry: now.getTime() + expiryTime, // expiryTime en milisegundos
         };
         await AsyncStorage.setItem("userToken", JSON.stringify(item));
-    };
-    
-    // Usage:
-    const token = res.data["access_token"];
-    const expiryTime = 3600 * 500; // 30 mn in milliseconds
-    await saveTokenWithExpiry(token, expiryTime);
-      navigation.navigate("GustosScreen");
+      };
+
+      const tokenValue = res.data["access_token"];
+      const expiryTime = 3600 * 1000; // 1 hora en milisegundos
+      await saveTokenWithExpiry(tokenValue, expiryTime);
+
+      try {
+        const storedItemStr = await AsyncStorage.getItem("userToken");
+        const token = JSON.parse(storedItemStr);
+        const response = await axios.get(pathToCheckGustos, {
+          headers: {
+            Accept: 'application/json',
+            'Authorization': `Bearer ${token.value}`,
+          },
+        });
+
+        if (response.data.status === 'encontrado') {
+          navigation.navigate("Tabs");
+        } else {
+          navigation.navigate("GustosScreen");
+        }
+      } catch (error) {
+        Alert.alert("Error al verificar los gustos");
+      }
     } catch (error) {
       if (error.response) {
-        /*console.error(
-          `Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`
-        )*/
         Alert.alert("Credenciales inválidas");
       } else {
         Alert.alert("Error al realizar la solicitud");
@@ -74,13 +88,13 @@ function LogIn() {
         />
         <Text style={styles.logoText}>REDI</Text>
       </View>
-      <Text style={styles.title}>Inicia Sesion</Text>
+      <Text style={styles.title}>Inicia Sesión</Text>
       <Text style={styles.subtitle}>
         Ingresa tu usuario y contraseña para acceder a tu cuenta
       </Text>
       <TextInput
         style={styles.input}
-        placeholder="user1"
+        placeholder="Usuario"
         value={username}
         onChangeText={setUsername}
       />
@@ -122,7 +136,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 65,
     height: 35,
-    marginBottom: 0
   },
   logoText: {
     fontSize: 28,

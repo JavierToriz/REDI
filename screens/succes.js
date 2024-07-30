@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
-import Navigation from "../navigation";
 
 // Importa la imagen local
 const successImage = require('../src/gift/success.gif'); 

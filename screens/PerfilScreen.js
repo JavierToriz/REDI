@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pathToMyProfile, pathMyFollowers, pathMyPublicaciones } from "./path";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function PerfilScreen() {
   const [dataUser, setDataUser] = useState(null);
@@ -19,44 +20,46 @@ export default function PerfilScreen() {
   const [dataPublicaciones, setDataPublicaciones] = useState(null);
   const [numberOfScenes, setNumberOfScenes] = useState(0);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const storedItemStr = await AsyncStorage.getItem("userToken");
-        if (!storedItemStr) throw new Error("No token found");
+  const fetchProfileData = async () => {
+    try {
+      const storedItemStr = await AsyncStorage.getItem("userToken");
+      if (!storedItemStr) throw new Error("No token found");
 
-        const token = JSON.parse(storedItemStr);
+      const token = JSON.parse(storedItemStr);
 
-        const [profileResponse, followersResponse, publicacionesResponse] = await Promise.all([
-          axios.get(pathToMyProfile, {
-            headers: { Authorization: `Bearer ${token.value}` },
-          }),
-          axios.get(pathMyFollowers, {
-            headers: { Authorization: `Bearer ${token.value}` },
-          }),
-          axios.get(pathMyPublicaciones, {
-            headers: { Authorization: `Bearer ${token.value}` },
-          }),
-        ]);
+      const [profileResponse, followersResponse, publicacionesResponse] = await Promise.all([
+        axios.get(pathToMyProfile, {
+          headers: { Authorization: `Bearer ${token.value}` },
+        }),
+        axios.get(pathMyFollowers, {
+          headers: { Authorization: `Bearer ${token.value}` },
+        }),
+        axios.get(pathMyPublicaciones, {
+          headers: { Authorization: `Bearer ${token.value}` },
+        }),
+      ]);
 
-        setDataUser(profileResponse.data);
-        setDataFollowers(followersResponse.data);
-        setDataPublicaciones(publicacionesResponse.data);
+      setDataUser(profileResponse.data);
+      setDataFollowers(followersResponse.data);
+      setDataPublicaciones(publicacionesResponse.data);
 
-        // Verifica si publicacionesResponse.data.publicaciones es un número válido
-        setNumberOfScenes(publicacionesResponse.data.publicaciones.length || 0);
-        
-        console.log(profileResponse.data);
-        console.log(followersResponse.data);
-        console.log(publicacionesResponse.data);
+      // Verifica si publicacionesResponse.data.publicaciones es un número válido
+      setNumberOfScenes(publicacionesResponse.data.publicaciones.length || 0);
+      
+      console.log(profileResponse.data);
+      console.log(followersResponse.data);
+      console.log(publicacionesResponse.data);
 
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      }
-    };
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
 
-    fetchProfileData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [])
+  );
 
   // Convertir Base64 a URL de datos
   const getImageSource = (base64Image) => {
