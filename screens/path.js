@@ -19,3 +19,7 @@ export const pathToMyNotifications = `${notificaciones_service}/myNotifications`
 export const pathToEditPublication = `${publicaciones_service}/editPublicacion`;
 export const pathToWatchWebGL = `${almacenamiento_service}/watchwebgl/`;
 export const pathToGenerateWordsKey = `${copiloto_service}/generateWords`;
+export const pathToWatchPublication = `${publicaciones_service}/publication`;
+export const pathToLikePublication = `${publicaciones_service}/likePublicacion`;
+export const pathToAllCommentsPublication = `${publicaciones_service}/comentariosPublicacion`;
+export const pathToCommentPublication = `${publicaciones_service}/commentPublicacion`;

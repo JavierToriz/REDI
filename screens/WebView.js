@@ -17,7 +17,7 @@ function WebViewScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff", // Asegura que el fondo sea blanco o cualquier color que desees
+    backgroundColor: "#fff", 
   },
   webview: {
     flex: 1,

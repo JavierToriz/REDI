@@ -13,6 +13,7 @@ import {
   import { pathToGustosUsuario } from "../path";
   import axios from "axios";
   import AsyncStorage from '@react-native-async-storage/async-storage';
+  import { handleLogout } from '../../src/components/HeaderLeft';
 
   function GustosScreen() {
     const navigation = useNavigation();
@@ -32,6 +33,20 @@ import {
       console.log("Temas seleccionados:", selectedThemes);
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
+      
+      try {
+        const storedItemStr = await AsyncStorage.getItem("userToken");
+        const token = storedItemStr ? JSON.parse(storedItemStr) : null;
+
+        if (token) {
+          console.log("Token recuperado:", token);
+        } else {
+          handleLogout();
+        }
+      } catch (error) {
+        console.error("Error al recuperar o parsear el token:", error);
+      }
+
       const url = pathToGustosUsuario;
       const headers = {
         Accept: "application/json",

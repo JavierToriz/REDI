@@ -32,6 +32,7 @@ import WebViewScreen from "./screens/WebView";
 import SuccessScreen from "./screens/succes";
 import CreatePublication from "./screens/CreatePublication";
 import PublicationSucces from "./screens/PublicationSucces";
+import CustomScreen from "./screens/CustomScreen";
 
 // Header's component
 import ButtonHeader from "./src/components/ButtonHeader";
@@ -206,7 +207,7 @@ function MyStack() {
       <Stack.Screen
         name="VisualizarEscena"
         component={VisualizarEscena}
-        options={{ headerTitle: "Escena" }}
+        options={{ headerTitle: "REDI" }}
       />
       <Stack.Screen
         name="ComentariosScreen"
@@ -241,6 +242,11 @@ function MyStack() {
       <Stack.Screen
         name="PublicationSucces"
         component={PublicationSucces}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CustomScreen"
+        component={CustomScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

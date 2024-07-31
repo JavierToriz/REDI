@@ -68,7 +68,8 @@ function LogIn() {
           navigation.navigate("GustosScreen");
         }
       } catch (error) {
-        Alert.alert("Error al verificar los gustos");
+        // Alert.alert("Error al verificar los gustos");
+        navigation.navigate("GustosScreen");
       }
     } catch (error) {
       if (error.response) {
