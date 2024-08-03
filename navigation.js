@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { pathToCheckGustos } from "./screens/path";
@@ -22,8 +17,8 @@ import GustosScreen from "./screens/auth/GustosScreen";
 import HomeScreen from "./screens/CameraScreen";
 import CreadorEscenas from "./screens/CreadorEscenas";
 import CameraScreen from "./screens/HomeScreen";
-import GalleryScreen from './screens/GalleryScreen';
-import ImageDetailScreen from './screens/ImageDetailScreen';
+import GalleryScreen from "./screens/GalleryScreen";
+import ImageDetailScreen from "./screens/ImageDetailScreen";
 import NotificacionesScreen from "./screens/NotificacionesScreen";
 import VisualizarEscena from "./screens/VisualizarEscena";
 import ComentariosScreen from "./screens/ComentariosScreen";
@@ -33,11 +28,12 @@ import SuccessScreen from "./screens/succes";
 import CreatePublication from "./screens/CreatePublication";
 import PublicationSucces from "./screens/PublicationSucces";
 import CustomScreen from "./screens/CustomScreen";
+import QueryScreen from "./screens/QueryScreen";
 
 // Header's component
 import ButtonHeader from "./src/components/ButtonHeader";
 import SearchHeader from "./src/components/SearchHeader";
-import HeaderLeft from './src/components/HeaderLeft';
+import HeaderLeft from "./src/components/HeaderLeft";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,7 +45,6 @@ function MyTabs() {
       initialRouteName="HomeScreen"
       screenOptions={{
         headerLeft: () => <HeaderLeft />,
-        
         headerTitle: () => <SearchHeader />,
         headerRight: () => <ButtonHeader icon="bell" />,
         tabBarActiveTintColor: "#6e00fa",
@@ -137,7 +132,7 @@ function MyStack() {
 
         const response = await axios.get(url, {
           headers: {
-            'Authorization': `Bearer ${token.value}`,
+            Authorization: `Bearer ${token.value}`,
           },
         });
         console.log(response.data);
@@ -169,7 +164,11 @@ function MyStack() {
     return <LoadingScreen />;
   }
 
-  const initialRoute = isAuthenticated ? (isSpecialCase ? 'GustosScreen' : 'Tabs') : 'LogIn';
+  const initialRoute = isAuthenticated
+    ? isSpecialCase
+      ? "GustosScreen"
+      : "Tabs"
+    : "LogIn";
   console.log("Initial Route:", initialRoute);
 
   return (
@@ -249,6 +248,14 @@ function MyStack() {
         component={CustomScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="QueryScreen"
+        component={QueryScreen}
+        options={{
+          headerShown: true, // Asegúrate de que el encabezado esté visible
+          headerTitle: () => <SearchHeader />, // Componente personalizado para el título
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -256,8 +263,8 @@ function MyStack() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   tabBar: {
     display: "flex",

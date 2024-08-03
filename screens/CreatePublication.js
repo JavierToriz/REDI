@@ -120,7 +120,12 @@ export default function CreatePublication({ route, navigation }) {
     try {
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
-
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       // Convertir la imagen a base64
       const response = await fetch(imageUri);
       const blob = await response.blob();
@@ -160,6 +165,10 @@ export default function CreatePublication({ route, navigation }) {
             "Error",
             "Hubo un error al crear tu publicación. Por favor, intenta de nuevo."
           );
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'LogIn' }],
+          });
         }
       };
     } catch (error) {
@@ -168,6 +177,10 @@ export default function CreatePublication({ route, navigation }) {
         "Error",
         "Hubo un error al crear tu publicación. Por favor, intenta de nuevo."
       );
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LogIn' }],
+      });
     }
   };
 

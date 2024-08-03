@@ -27,8 +27,8 @@ function LogIn() {
     };
     const data = new URLSearchParams({
       grant_type: "password",
-      username: username,
-      password: password,
+      username: username.trim(),
+      password: password.trim(),
       scope: "read",
       client_id: "your-client-id",
       client_secret: "your-client-secret",

@@ -5,6 +5,7 @@ const almacenamiento_service = "http://192.168.8.43:8005";
 const publicaciones_service = "http://192.168.8.43:8006";
 const notificaciones_service = "http://192.168.8.43:8007";
 const copiloto_service = "https://8001-jesusbhz-redipoint-k3hynxrkp8y.ws-us115.gitpod.io";
+const busqueda_service = "http://192.168.8.43:8009";
 
 export const pathToToken = `${authentication_service}/token`;
 export const pathToRegistroUsuario = `${usuarios_service}/create_usuario`;
@@ -23,3 +24,5 @@ export const pathToWatchPublication = `${publicaciones_service}/publication`;
 export const pathToLikePublication = `${publicaciones_service}/likePublicacion`;
 export const pathToAllCommentsPublication = `${publicaciones_service}/comentariosPublicacion`;
 export const pathToCommentPublication = `${publicaciones_service}/commentPublicacion`;
+export const pathToBusquda = `${busqueda_service}/recomendar`;
+export const pathToDownloadAPK = `${almacenamiento_service}/downloadApk`;

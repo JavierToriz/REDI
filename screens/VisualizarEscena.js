@@ -15,7 +15,9 @@ import axios from "axios";
 import { pathToWatchPublication, pathToLikePublication } from "./path";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function VisualizarEscena() {
+export default function VisualizarEscena({ route }) {
+  const { path } = route.params;
+  console.log(path);
   const navigation = useNavigation();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,8 +28,14 @@ export default function VisualizarEscena() {
       try {
         const storedItemStr = await AsyncStorage.getItem("userToken");
         const token = JSON.parse(storedItemStr);
-
+        if(token === null){
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'LogIn' }],
+          });
+        }
         const url = `${pathToWatchPublication}/1`;
+        // const url = `${pathToWatchPublication}/${path}`;
         const response = await axios.get(url, {
           headers: {
             "Content-Type": "application/json",
@@ -71,7 +79,12 @@ export default function VisualizarEscena() {
     try {
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
-
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       const url = `${pathToLikePublication}/${data.publicacion}`;
       const response = await axios.post(url, null, {
         headers: {

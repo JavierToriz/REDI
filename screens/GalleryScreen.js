@@ -29,6 +29,12 @@ function GalleryScreen({ route, navigation }) {
     const url = pathToPublicationForAdminNewPublication;
     const storedItemStr = await AsyncStorage.getItem("userToken");
     const token = JSON.parse(storedItemStr);
+    if(token === null){
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LogIn' }],
+      });
+    }
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -52,10 +58,22 @@ function GalleryScreen({ route, navigation }) {
         console.error("Error response data:", error.response.data);
         console.error("Error response status:", error.response.status);
         console.error("Error response headers:", error.response.headers);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
       } else if (error.request) {
         console.error("Error request data:", error.request);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
       } else {
         console.error("Error message:", error.message);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
       }
       Alert.alert("Error al notificar");
     }
@@ -66,6 +84,12 @@ function GalleryScreen({ route, navigation }) {
     try {
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       const formData = new FormData();
       const objetivo = mode === "Modelo" ? "model" : "scene";
       const url = `${pathUploadFotos}/${objetivo}`;

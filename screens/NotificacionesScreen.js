@@ -25,6 +25,12 @@ export default function NotificacionesScreen({ navigation }) {
     try {
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       const response = await axios.get(pathToMyNotifications, {
         params: {
           skip: 0,
@@ -49,6 +55,10 @@ export default function NotificacionesScreen({ navigation }) {
     } catch (error) {
       console.error("Error al hacer la solicitud:", error);
       setError("Error al obtener las notificaciones.");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LogIn' }],
+      });
     }
   };
 

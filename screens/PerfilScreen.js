@@ -26,7 +26,12 @@ export default function PerfilScreen() {
       if (!storedItemStr) throw new Error("No token found");
 
       const token = JSON.parse(storedItemStr);
-
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       const [profileResponse, followersResponse, publicacionesResponse] = await Promise.all([
         axios.get(pathToMyProfile, {
           headers: { Authorization: `Bearer ${token.value}` },
@@ -52,6 +57,10 @@ export default function PerfilScreen() {
 
     } catch (error) {
       console.error("Error fetching profile data:", error);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LogIn' }],
+      });
     }
   };
 

@@ -13,7 +13,6 @@ import {
   import { pathToGustosUsuario } from "../path";
   import axios from "axios";
   import AsyncStorage from '@react-native-async-storage/async-storage';
-  import { handleLogout } from '../../src/components/HeaderLeft';
 
   function GustosScreen() {
     const navigation = useNavigation();
@@ -33,20 +32,12 @@ import {
       console.log("Temas seleccionados:", selectedThemes);
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
-      
-      try {
-        const storedItemStr = await AsyncStorage.getItem("userToken");
-        const token = storedItemStr ? JSON.parse(storedItemStr) : null;
-
-        if (token) {
-          console.log("Token recuperado:", token);
-        } else {
-          handleLogout();
-        }
-      } catch (error) {
-        console.error("Error al recuperar o parsear el token:", error);
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
       }
-
       const url = pathToGustosUsuario;
       const headers = {
         Accept: "application/json",
@@ -72,6 +63,10 @@ import {
           console.error(
             `Error al realizar la solicitud: ${error.response.status} - ${error.response.statusText}`
           );
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'LogIn' }],
+          });
           console.log("Detalle del error:", error.response.data.detail);
 
           Alert.alert(
@@ -80,6 +75,10 @@ import {
         } else {
           console.error(error.message);
           Alert.alert("Error al realizar la solicitud");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'LogIn' }],
+          });
         }
       }
     };

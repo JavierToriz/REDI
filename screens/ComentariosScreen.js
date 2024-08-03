@@ -27,6 +27,12 @@ export default function ComentariosScreen({ route }) {
     try {
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       const response = await axios.get(url, {
         headers: {
           "Content-Type": "application/json",
@@ -37,6 +43,10 @@ export default function ComentariosScreen({ route }) {
       // console.log(response.data.comentarios);
     } catch (error) {
       console.error(error);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LogIn' }],
+      });
     }
   };
 
@@ -44,7 +54,12 @@ export default function ComentariosScreen({ route }) {
     try {
       const storedItemStr = await AsyncStorage.getItem("userToken");
       const token = JSON.parse(storedItemStr);
-
+      if(token === null){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'LogIn' }],
+        });
+      }
       const urlSend = pathToCommentPublication+"/"+1; 
       
       await axios.post(urlSend, {
@@ -63,6 +78,10 @@ export default function ComentariosScreen({ route }) {
       fetchData(`${pathToAllCommentsPublication}/1`);
     } catch (error) {
       console.error('Error al enviar comentario:', error);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LogIn' }],
+      });
     }
   };
 

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -5,13 +6,30 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
-import { Icon, Entypo, FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 export default function SearchHeader() {
+  const navigation = useNavigation();
+  const [consulta, setConsulta] = useState("");
+
+  const handleSearchSubmit = () => {
+    if (consulta.trim() !== "") {
+      navigation.navigate("QueryScreen", {
+        path: consulta.trim()
+      });
+      setConsulta(""); // Clear the input after navigating
+    }
+  };
+
   return (
     <View style={styles.searchContainer}>
-      <TextInput placeholder="Buscar" style={styles.searchInput} />
+      <TextInput
+        placeholder="Buscar"
+        onChangeText={setConsulta}
+        value={consulta} // Set the value to the state
+        style={styles.searchInput}
+        onSubmitEditing={handleSearchSubmit}
+      />
     </View>
   );
 }
@@ -22,13 +40,12 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderRadius: 10,
     width: 150,
-    marginLeft: 30,
+    marginLeft: '18%',
     marginRight: 0,
     borderWidth: 1,
     marginBottom: 10,
     borderColor: "#9b9b9b",
   },
-
   searchInput: {
     height: 38,
   },

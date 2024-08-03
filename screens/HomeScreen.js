@@ -64,7 +64,12 @@ function HomeScreen() {
           <Text style={styles.mostViewedTitle}>Los más vistos</Text>
           <TouchableOpacity
             style={styles.itemContainer}
-            onPress={() => navigation.navigate("VisualizarEscena")}
+            onPress={() =>
+              navigation.navigate("VisualizarEscena", {
+                // path: parseInt(item.id_publication, 10),
+                path: parseInt(1, 10),
+              })
+            }
           >
             <Image
               source={require("../src/images/miniatura.jpg")}
