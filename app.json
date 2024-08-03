@@ -25,11 +25,18 @@
       "permissions": [
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
         "REQUEST_INSTALL_PACKAGES"
-      ]
+      ],
+      "package": "com.jesusbhz.Redi"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4830c728-dd2a-4f7f-a5d5-9b9096c02c11"
+      }
     }
   }
 }

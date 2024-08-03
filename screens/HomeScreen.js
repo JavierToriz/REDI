@@ -9,17 +9,68 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios'; 
+import { pathToFeed } from "./path"; 
 
 function HomeScreen() {
   const [scrollY, setScrollY] = useState(0);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const placeholderImage = require("../src/images/404.jpeg");
+
   const handleScroll = (event) => {
     setScrollY(event.nativeEvent.contentOffset.y);
   };
   const navigation = useNavigation();
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const storedItemStr = await AsyncStorage.getItem("userToken");
+        const token = JSON.parse(storedItemStr);
+        if (token === null) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "LogIn" }],
+          });
+          return;
+        }
+        const url = `${pathToFeed}`;
+        const response = await axios.get(url, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token.value}`,
+          },
+        });
+
+        if (response.status === 404) {
+          setError("No se encontraron resultados");
+        } else {
+          setData(response.data.recommendations);
+        }
+      } catch (error) {
+        console.error(error);
+        if (error.response && error.response.data && error.response.data.detail === "Parece que por ahora no hay nada que ver, pero no te preocupes, pronto te recomendaremos algo") {
+          setError("Parece que por ahora no hay nada que ver, pero no te preocupes, pronto te recomendaremos algo");
+        } else {
+          setError(
+            `No se encontraron resultados para "${path}", prueba con buscar otra cosa`
+          ); 
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
     navigation.setOptions({
       headerLargeTitle: true,
     });
@@ -37,11 +88,32 @@ function HomeScreen() {
     });
   }, [navigation]);
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorMessage}>{error}</Text>
+      </View>
+    );
+  }
+
+  const getImageSource = (base64Image) => {
+    if (!base64Image) return placeholderImage;
+    return { uri: `data:image/jpeg;base64,${base64Image}` };
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
-        barStyle="dark-content" // Letras negras
-        backgroundColor="white" // Fondo blanco
+        barStyle="dark-content" 
+        backgroundColor="white" 
       />
       <ScrollView
         contentContainerStyle={[
@@ -62,90 +134,37 @@ function HomeScreen() {
         </View>
         <View style={styles.videosContainer}>
           <Text style={styles.mostViewedTitle}>Los más vistos</Text>
-          <TouchableOpacity
-            style={styles.itemContainer}
-            onPress={() =>
-              navigation.navigate("VisualizarEscena", {
-                // path: parseInt(item.id_publication, 10),
-                path: parseInt(1, 10),
-              })
-            }
-          >
-            <Image
-              source={require("../src/images/miniatura.jpg")}
-              style={styles.miniatura}
-            />
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.mostViewedText}>
-                Recorrido Virtual por París
-              </Text>
-              <Text style={styles.mostViewedSubText}>
-                Javier - 8.3k Vistas - hace 24hrs
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.itemContainer}>
-            <Image
-              source={require("../src/images/miniatura.jpg")}
-              style={styles.miniatura}
-            />
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.mostViewedText}>
-                Recorrido Virtual por París
-              </Text>
-              <Text style={styles.mostViewedSubText}>
-                Javier - 8.3k Vistas - hace 24hrs
-              </Text>
-            </View>
-          </View>
-          <View style={styles.itemContainer}>
-            <Image
-              source={require("../src/images/miniatura.jpg")}
-              style={styles.miniatura}
-            />
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.mostViewedText}>
-                Recorrido Virtual por París
-              </Text>
-              <Text style={styles.mostViewedSubText}>
-                Javier - 8.3k Vistas - hace 24hrs
-              </Text>
-            </View>
-          </View>
-          <View style={styles.itemContainer}>
-            <Image
-              source={require("../src/images/miniatura.jpg")}
-              style={styles.miniatura}
-            />
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.mostViewedText}>
-                Recorrido Virtual por París
-              </Text>
-              <Text style={styles.mostViewedSubText}>
-                Javier - 8.3k Vistas - hace 24hrs
-              </Text>
-            </View>
-          </View>
-          <View style={styles.itemContainer}>
-            <Image
-              source={require("../src/images/miniatura.jpg")}
-              style={styles.miniatura}
-            />
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.mostViewedText}>
-                Recorrido Virtual por París
-              </Text>
-              <Text style={styles.mostViewedSubText}>
-                Javier - 8.3k Vistas - hace 24hrs
-              </Text>
-            </View>
-          </View>
+          {data.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.itemContainer}
+              onPress={() =>
+                navigation.navigate("VisualizarEscena", {
+                  path: parseInt(item.id_publication, 10),
+                })
+              }
+            >
+              <Image
+                source={item.image ? getImageSource(item.image) : placeholderImage}
+                style={styles.miniatura}
+              />
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.mostViewedText}>
+                  {item.title ? item.title : "Título no disponible"}
+                </Text>
+                <Text style={styles.mostViewedSubText}>
+                  {item.director ? item.director : "Director no disponible"} •{" "}
+                  {item.likes ? item.likes : "0"} Likes •{" "}
+                  {item.time ? item.time : "Fecha no disponible"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -154,7 +173,17 @@ const styles = StyleSheet.create({
   containerScroll: {
     backgroundColor: "#FFFFFF",
   },
-
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorMessage: {
+    color: "gray",
+    fontSize: 16,
+    textAlign: "center",
+    margin: 20,
+  },
   banner: {
     justifyContent: "center",
     height: 350,
@@ -186,7 +215,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 30,
   },
   miniatura: {
@@ -201,6 +230,7 @@ const styles = StyleSheet.create({
   mostViewedText: {
     fontSize: 16,
     fontWeight: "bold",
+    marginTop: 6
   },
   mostViewedSubText: {
     fontSize: 12,

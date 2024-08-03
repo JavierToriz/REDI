@@ -19,7 +19,7 @@ export default function ComentariosScreen({ route }) {
   const [comment, setComment] = useState('');
 
   useEffect(() => {
-    const url = `${pathToAllCommentsPublication}/1`;
+    const url = `${pathToAllCommentsPublication}/${path}`;
     fetchData(url);
   }, []);
 
@@ -60,7 +60,7 @@ export default function ComentariosScreen({ route }) {
           routes: [{ name: 'LogIn' }],
         });
       }
-      const urlSend = pathToCommentPublication+"/"+1; 
+      const urlSend = pathToCommentPublication+"/"+path; 
       
       await axios.post(urlSend, {
         contenido: comment,
@@ -75,7 +75,7 @@ export default function ComentariosScreen({ route }) {
       console.log('Comentario enviado:', comment);
       setComment(''); 
       
-      fetchData(`${pathToAllCommentsPublication}/1`);
+      fetchData(`${pathToAllCommentsPublication}/${path}`);
     } catch (error) {
       console.error('Error al enviar comentario:', error);
       navigation.reset({

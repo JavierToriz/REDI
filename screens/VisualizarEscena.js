@@ -34,8 +34,8 @@ export default function VisualizarEscena({ route }) {
             routes: [{ name: 'LogIn' }],
           });
         }
-        const url = `${pathToWatchPublication}/1`;
-        // const url = `${pathToWatchPublication}/${path}`;
+        // const url = `${pathToWatchPublication}/1`;
+        const url = `${pathToWatchPublication}/${path}`;
         const response = await axios.get(url, {
           headers: {
             "Content-Type": "application/json",
