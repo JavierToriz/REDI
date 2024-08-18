@@ -1,19 +1,18 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   ScrollView,
   Image,
   SafeAreaView,
   TouchableOpacity,
-  StatusBar,
-  ActivityIndicator
+  StatusBar
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios'; 
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import { pathToFeed } from "./path"; 
 
 function HomeScreen() {
@@ -26,6 +25,7 @@ function HomeScreen() {
   const handleScroll = (event) => {
     setScrollY(event.nativeEvent.contentOffset.y);
   };
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -90,9 +90,20 @@ function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <SkeletonPlaceholder>
+        <View style={styles.container}>
+          <View style={styles.banner} />
+          <View style={styles.videosContainer}>
+            {[...Array(5)].map((_, index) => (
+              <View key={index} style={styles.skeletonItem}>
+                <View style={styles.skeletonImage} />
+                <View style={styles.skeletonText} />
+                <View style={styles.skeletonSubText} />
+              </View>
+            ))}
+          </View>
+        </View>
+      </SkeletonPlaceholder>
     );
   }
 
@@ -111,10 +122,7 @@ function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="dark-content" 
-        backgroundColor="white" 
-      />
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
       <ScrollView
         contentContainerStyle={[
           styles.containerScroll,
@@ -136,7 +144,7 @@ function HomeScreen() {
           <Text style={styles.mostViewedTitle}>Los más vistos</Text>
           {data.map((item) => (
             <TouchableOpacity
-              key={item.id}
+              key={item.id_publication}
               style={styles.itemContainer}
               onPress={() =>
                 navigation.navigate("VisualizarEscena", {
@@ -165,6 +173,7 @@ function HomeScreen() {
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -191,7 +200,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#01041C",
     alignItems: "center",
   },
-
   bannerText: {
     color: "#ffffff",
     fontSize: 20,
@@ -230,11 +238,31 @@ const styles = StyleSheet.create({
   mostViewedText: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 6
+    marginTop: 6,
   },
   mostViewedSubText: {
     fontSize: 12,
     color: "#666",
+  },
+  skeletonItem: {
+    marginBottom: 30,
+  },
+  skeletonImage: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+  },
+  skeletonText: {
+    height: 20,
+    marginTop: 10,
+    borderRadius: 4,
+    backgroundColor: "#E0E0E0",
+  },
+  skeletonSubText: {
+    height: 15,
+    marginTop: 6,
+    borderRadius: 4,
+    backgroundColor: "#E0E0E0",
   },
 });
 

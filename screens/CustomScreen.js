@@ -13,7 +13,7 @@ import { faVrCardboard, faMobile } from '@fortawesome/free-solid-svg-icons';
 import * as FileSystem from 'expo-file-system';
 import * as Notifications from 'expo-notifications';
 import * as Sharing from 'expo-sharing';
-import { pathToDownloadAPK } from './path';
+import { pathToDownloadAPK } from "./path";
 
 export default function CustomScreen({ route, navigation }) {
   const { path } = route.params;
@@ -22,7 +22,6 @@ export default function CustomScreen({ route, navigation }) {
     const requestPermissions = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') {
-        console.log('Permission for notifications was not granted.');
         Alert.alert('Permisos de Notificación', 'Necesitas permitir notificaciones para recibir actualizaciones.');
       }
     };
@@ -37,9 +36,16 @@ export default function CustomScreen({ route, navigation }) {
 
   const WatchVR = async () => {
     const url = `${pathToDownloadAPK}/${path}`;
-    const fileUri = FileSystem.cacheDirectory + 'redi.apk';
+    const downloadDir = FileSystem.documentDirectory + 'downloads';
+    const fileUri = `${downloadDir}/redi.apk`;
 
     try {
+      // Verificar si el directorio de destino existe, si no, créalo
+      const dirInfo = await FileSystem.getInfoAsync(downloadDir);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(downloadDir, { intermediates: true });
+      }
+
       // Mostrar notificación de que la descarga ha comenzado
       await Notifications.scheduleNotificationAsync({
         content: {

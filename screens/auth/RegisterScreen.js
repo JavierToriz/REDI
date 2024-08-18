@@ -61,7 +61,7 @@ function RegisterScreen() {
       nacimiento: Nacimiento.toISOString(), 
       genero: Genero,
     };
-
+    console.log(data);
     try {
       const res = await axios.post(url, data, { headers });
       console.log("Respuesta JSON:", res.data);

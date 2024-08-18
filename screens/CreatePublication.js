@@ -25,17 +25,22 @@ export default function CreatePublication({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [displayedKeywords, setDisplayedKeywords] = useState("");
 
-  // console.log("Notificacion:", notification);
-
   const simulateTyping = (text, interval = 100) => {
     let index = 0;
     const typingInterval = setInterval(() => {
-      setDisplayedKeywords(text.substring(0, index + 1));
+      const currentText = text.substring(0, index + 1);
+      setDisplayedKeywords(currentText);
+      setPalabrasClave(currentText); // Sincroniza displayedKeywords y palabrasClave
       index++;
       if (index >= text.length) {
         clearInterval(typingInterval);
       }
     }, interval);
+  };
+
+  const handleKeywordsChange = (text) => {
+    setPalabrasClave(text);
+    setDisplayedKeywords(text); // Asegura que se refleje en el campo de texto
   };
 
   const handleImagePicker = async () => {
@@ -221,7 +226,7 @@ export default function CreatePublication({ route, navigation }) {
           style={styles.keywordInput}
           placeholder="Agrega palabras clave"
           value={displayedKeywords}
-          onChangeText={setPalabrasClave}
+          onChangeText={handleKeywordsChange}
         />
       </View>
       <TouchableOpacity style={styles.llama} onPress={generateWords} disabled={isLoading}>

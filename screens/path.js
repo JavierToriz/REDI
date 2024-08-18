@@ -1,12 +1,14 @@
-const authentication_service = "http://192.168.8.43:8001";
-const usuarios_service = "http://192.168.8.43:8003";
-const social_service = "http://192.168.8.43:8004";
-const almacenamiento_service = "http://192.168.8.43:8005";
-const publicaciones_service = "http://192.168.8.43:8006";
-const notificaciones_service = "http://192.168.8.43:8007";
+const ip = "192.168.0.8";
+
+const authentication_service = `http://${ip}:8001`;
+const usuarios_service = `http://${ip}:8003`;
+const social_service = `http://${ip}:8004`;
+const almacenamiento_service = `http://${ip}:8005`;
+const publicaciones_service = `http://${ip}:8006`;
+const notificaciones_service = `http://${ip}:8007`;
 const copiloto_service = "https://8001-jesusbhz-redipoint-k3hynxrkp8y.ws-us115.gitpod.io";
-const busqueda_service = "http://192.168.8.43:8009";
-const feed_service = "http://192.168.8.43:8014";
+const busqueda_service = `http://${ip}:8009`;
+const feed_service = `http://${ip}:8010`;
 
 export const pathToToken = `${authentication_service}/token`;
 export const pathToRegistroUsuario = `${usuarios_service}/create_usuario`;

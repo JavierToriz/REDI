@@ -85,7 +85,7 @@ export default function App({ route, navigation }) {
       <Text style={styles.header}>Lo último en publicaciones sobre {path}</Text>
       <ScrollView>
         {data.map((item) => (
-          <View key={item.id} style={styles.card}>
+          <View key={item.id_publication} style={styles.card}>
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("VisualizarEscena", {
